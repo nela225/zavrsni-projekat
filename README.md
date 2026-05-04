@@ -16,7 +16,4 @@ Jednostavna full-stack aplikacija za upravljanje proizvodima u kafiću.
 * Dodavanje novih artikala
 * Brisanje artikala
 
-### Instalacija
-1. Ubaci `baza.sql` u PHPMyAdmin
-2. Podesi `db.php` podatke
-3. Pokreni preko XAMPP-a
+
