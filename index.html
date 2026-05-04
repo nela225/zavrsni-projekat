@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <title>Kafić Sistem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-section">
+        <button id="btn-login">Prijava (Google)</button>
+    </div>
+
+    <div id="app-section" style="display:none;">
+        <button id="btn-logout">Odjava</button>
+        <form id="dodaj-form">
+            <input type="text" id="naziv" placeholder="Naziv" required>
+            <input type="number" id="cijena" step="0.1" placeholder="Cijena" required>
+            <button type="submit">Dodaj</button>
+        </form>
+        <ul id="lista-proizvoda"></ul>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAs-DEMO-KEY-2026-TG-Sarajevo",
+            authDomain: "kafic-projekat-si.firebaseapp.com",
+            projectId: "kafic-projekat-si",
+            storageBucket: "kafic-projekat-si.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('app-section').style.display = 'block';
+                osvjezi();
+            } else {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('app-section').style.display = 'none';
+            }
+        });
+
+        document.getElementById('btn-login').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('btn-logout').onclick = () => signOut(auth);
+
+        async function osvjezi() {
+            const res = await fetch('api.php');
+            const podaci = await res.json();
+            const lista = document.getElementById('lista-proizvoda');
+            lista.innerHTML = '';
+            podaci.forEach(p => {
+                const li = document.createElement('li');
+                li.innerHTML = `${p.naziv} - ${p.cijena} KM <button onclick="brisi(${p.id})">X</button>`;
+                lista.appendChild(li);
+            });
+        }
+
+        document.getElementById('dodaj-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await fetch('api.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    naziv: document.getElementById('naziv').value,
+                    cijena: document.getElementById('cijena').value
+                })
+            });
+            osvjezi();
+            e.target.reset();
+        };
+
+        window.brisi = async (id) => {
+            await fetch(`api.php?id=${id}`, {method: 'DELETE'});
+            osvjezi();
+        };
+    </script>
+</body>
+</html>

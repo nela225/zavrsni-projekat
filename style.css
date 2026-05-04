@@ -1,0 +1,5 @@
+body { font-family: sans-serif; padding: 20px; }
+.container { max-width: 600px; margin: auto; }
+form { margin-bottom: 20px; }
+li { margin: 10px 0; list-style: none; border-bottom: 1px solid #ccc; padding: 5px; }
+button { cursor: pointer; }
